@@ -1,0 +1,225 @@
+# Job agent configuration. Secrets never go here — see .env.example.
+
+resume_path: resume.md          # master resume, never edited by the agent
+db_path: jobs.db                # SQLite, tracks every job seen and what was done
+out_dir: out                    # tailored resumes: out/<company>_<jobid>/
+
+llm:
+  provider: ollama              # gemini | ollama — one class each in job_agent/llm/
+  gemini:
+    model: gemini-3.8-flash     # GEMINI_API_KEY from env; free tier. gemini-2.5-flash is deprecated (routes
+                                # to 3.5-flash-lite on 2026-12-01). Fallback if rate-limited: gemini-3.6-flash
+  ollama:
+    model: qwen3.5:9b           # 6.6 GB Q4_K_M; `ollama pull qwen3.5:9b` first. Smaller/faster: qwen3.5:4b
+    url: http://localhost:11434
+    think: false                # true = model reasons before answering: ~12x slower per call, same scores in tests
+
+notify:
+  to: iayush45@gmail.com        # SMTP_USER / SMTP_APP_PASSWORD from env (Gmail app password)
+
+roles:
+  include:                      # title must contain one of these (case-insensitive)
+    - software engineer
+    - software developer
+    - software development engineer
+    - sde
+    - backend engineer
+    - back end engineer
+    - full stack
+    - member of technical staff
+    - application developer
+    - platform engineer
+    - ai engineer
+    - machine learning engineer
+  exclude:                      # title must not contain any of these
+    - principal
+    - director
+    - manager
+    - intern
+    - campus                    # campus/university hiring programmes are not wanted; SDE-1 full-time is the floor
+    - architect
+    - staff engineer
+    - staff software
+    - vice president
+  # Level from the title: "SDE II" / "Engineer 2" = 2, "Senior" / "III" = 3, anything else = 1 (SDE-1).
+  # The JD is also checked by the scorer: roles asking 3+ years or SDE-2 duties score low outside level_2_ok_at.
+  max_level: 1
+  level_2_ok_at: [Microsoft, ServiceNow, Salesforce]
+
+locations:
+  job_cities: [Hyderabad, Bangalore, Noida, Gurugram, Pune]   # priority order; used to rank matches
+  include_remote: true                                        # remote (India) jobs count too
+  company_must_have_office_in: [Bangalore, Hyderabad]        # Group B company filter (phase 2)
+
+match:
+  min_score: 65                 # Claude's 0-100 fit score needed to notify
+
+tailor:
+  # Skills the agent may add when a JD asks for them. Two kinds:
+  #   exact      – added only if the JD names this term
+  #   categories – the agent decides per JD whether a JD term fits the category
+  #                (e.g. JD says "Redshift" → fits "any SQL database"); every such
+  #                addition is listed in the email with the category it matched
+  skills_allowed_to_add:
+    exact: [Flask, Django, Redis, MongoDB, GraphQL, Apache Spark, PySpark,
+            Agentic AI, Transformer models, Concurrency, POSIX]
+    categories:
+      - any SQL database or dialect
+      - any RAG / LLM-orchestration framework
+
+screening:                      # fixed answers for application forms (phase 2)
+  notice_period_days: 45
+  current_ctc_lpa: 8
+  expected_ctc:
+    min_lpa: 12
+    preferred_lpa: 14
+    mode: company_average
+  willing_to_relocate: true
+
+applicant:                      # what goes into application forms (answers given 2026-11-10)
+  first_name: Ayush
+  last_name: Kshitij
+  email: iayush45@gmail.com
+  phone: "+91 7318367493"
+  location: Panjim, Goa, India
+  linkedin: https://www.linkedin.com/in/ayush-kshitij
+  github: https://github.com/AyushKshitij45
+  years_experience: 2           # internships + job; 6 months of it full-time
+  current_company: Acies
+  current_title: Software Engineer
+  work_authorized: "Yes"        # Indian citizen
+  needs_sponsorship: "No"
+  heard_about_us: Company careers site
+  gender: Male
+  disability: "No"
+  veteran: "No"
+  cover_letter: skip            # optional field left empty; mandatory one = unanswered question -> you get emailed
+  address: CMM Building, Panjim, Goa, 403005   # for forms that require a street address (Zscaler does)
+  # earliest start date = today + screening.notice_period_days
+  # any other question the form asks -> not submitted; emailed with "NEEDS YOUR ANSWER" in the subject
+
+education:                      # from resume.md; forms with School / Degree dropdowns use these
+  school: Kalinga Institute of Industrial Technology
+  degree: Bachelor of Technology
+  discipline: Computer Science
+  end_year: 2026
+  gpa: "8.11"
+
+apply:
+  dry_run: true                 # true = fill the form, attach a screenshot (form.png), do NOT submit.
+                                # Check one or two screenshots, then set false to let it submit.
+
+# Group A: you have a referral. Agent tailors the CV and emails it; you apply.
+companies:
+  referral:
+    - name: Salesforce
+      source: workday
+      host: salesforce.wd12.myworkdayjobs.com
+      tenant: salesforce
+      site: External_Career_Site
+      search_text: software engineer India
+      referral_note: Ask Yash (yash.sharma@salesforce.com) to submit the referral in Workday before you apply.
+    - name: Target
+      source: workday
+      host: target.wd5.myworkdayjobs.com
+      tenant: target
+      site: targetcareers
+      search_text: software engineer India
+    - name: Cisco
+      source: workday
+      host: cisco.wd5.myworkdayjobs.com
+      tenant: cisco
+      site: Cisco_Careers
+      search_text: software engineer India
+    - name: State Street
+      source: workday
+      host: statestreet.wd1.myworkdayjobs.com
+      tenant: statestreet
+      site: Global
+      search_text: software engineer
+      applied_facets:                       # "India" in search text does not filter here
+        Location_Country: [c4f78be1a8f14da0ab49ce1162348a5e]
+    - name: Maersk
+      source: workday
+      host: maersk.wd3.myworkdayjobs.com
+      tenant: maersk
+      site: Maersk_Careers
+      search_text: software engineer       # adding "India" drops Maersk to 3 hits; location filter does the rest
+    - name: ServiceNow
+      source: smartrecruiters
+      company_id: ServiceNow
+      query: software engineer
+    - name: Acumatica
+      source: smartrecruiters
+      company_id: Acumatica
+      query: software engineer
+    - name: Microsoft
+      source: microsoft
+      query: software engineer
+    - name: Amazon
+      source: amazon
+      query: software engineer
+    - name: Siemens
+      source: avature                      # jobs.siemens.com; HTML search page, fetcher pending
+      careers_url: "https://jobs.siemens.com/en_US/externaljobs/SearchJobs/software"
+
+  # Group B: auto-apply (phase 2). Research, pay and standing per company: COMPANIES.md (2026-11-10).
+  # Until a backend has an apply step, these behave like Group A (tailored CV emailed, you apply).
+  # Backends without a fetcher yet are skipped with a log warning, not an error.
+  auto_apply:
+    # --- Workday (fetcher ready; apply needs an account per company) ---
+    - {name: NVIDIA, source: workday, host: nvidia.wd5.myworkdayjobs.com, tenant: nvidia, site: NVIDIAExternalCareerSite, search_text: software engineer India}
+    - {name: Palo Alto Networks, source: workday, host: paloaltonetworks.wd5.myworkdayjobs.com, tenant: paloaltonetworks, site: panwexternalcareers, search_text: software engineer India}
+    - {name: Visa, source: workday, host: visa.wd5.myworkdayjobs.com, tenant: visa, site: Visa, search_text: software engineer India}
+    - {name: Adobe, source: workday, host: adobe.wd5.myworkdayjobs.com, tenant: adobe, site: external_experienced, search_text: software engineer India}
+    - {name: Autodesk, source: workday, host: autodesk.wd1.myworkdayjobs.com, tenant: autodesk, site: Ext, search_text: software engineer}
+    - {name: Mastercard, source: workday, host: mastercard.wd1.myworkdayjobs.com, tenant: mastercard, site: CorporateCareers, search_text: software engineer India}
+    - {name: Expedia Group, source: workday, host: expedia.wd108.myworkdayjobs.com, tenant: expedia, site: search, search_text: software engineer India}
+    - {name: Postman, source: workday, host: postman.wd108.myworkdayjobs.com, tenant: postman, site: careers, search_text: software engineer}
+    - {name: Sprinklr, source: workday, host: sprinklr.wd1.myworkdayjobs.com, tenant: sprinklr, site: careers, search_text: engineer India}
+    - {name: Walmart Global Tech, source: workday, host: walmart.wd5.myworkdayjobs.com, tenant: walmart, site: WalmartExternal, search_text: software engineer India}   # answers 422 to non-browser clients
+    # --- SmartRecruiters (fetcher ready; public apply form) ---
+    - {name: Arista Networks, source: smartrecruiters, company_id: AristaNetworks, query: software engineer}
+    - {name: SAP Labs India, source: smartrecruiters, company_id: SAPITBusinessSysteme, query: software engineer}
+    - {name: LinkedIn, source: smartrecruiters, company_id: linkedin3, query: software engineer}
+    - {name: PhonePe, source: smartrecruiters, company_id: PHONEPELIMITED, query: software engineer}
+    - {name: Freshworks, source: smartrecruiters, company_id: Freshworks, query: software engineer}
+    - {name: Swiggy, source: smartrecruiters, company_id: Swiggy, query: software engineer}
+    # --- Greenhouse (fetcher ready; public apply form) ---
+    - {name: Stripe, source: greenhouse, board: stripe}
+    - {name: Twilio, source: greenhouse, board: twilio}
+    - {name: Zscaler, source: greenhouse, board: zscaler}
+    - {name: Commvault, source: greenhouse, board: commvault}
+    - {name: Databricks, source: greenhouse, board: databricks}
+    - {name: Rubrik, source: greenhouse, board: rubrik}
+    - {name: MongoDB, source: greenhouse, board: mongodb}
+    - {name: Razorpay, source: greenhouse, board: razorpaysoftwareprivatelimited}
+    - {name: Groww, source: greenhouse, board: groww}
+    # --- Oracle HCM (public REST; fetcher pending) ---
+    - {name: JPMorgan Chase, source: oracle_hcm, host: jpmc.fa.oraclecloud.com, site: CX_1001, location_facet: "300000000289360", keyword: software engineer}
+    - {name: Oracle, source: oracle_hcm, host: eeho.fa.us2.oraclecloud.com, site: CX_45001, ui_site: jobsearch, location_facet: "300000000106947", keyword: software developer}
+    - {name: Dell Technologies, source: oracle_hcm, host: enterpriseplatform.dell.com, site: CX_1, ui_site: careers, keyword: software engineer}
+    - {name: Uber, source: oracle_hcm, host: iaziqy.fa.ocs.oraclecloud.com, site: UberCareers, keyword: software engineer}   # REST site number not found yet
+    # --- Eightfold, session-gated API (fetcher pending; needs Playwright) ---
+    - {name: Morgan Stanley, source: eightfold, careers_url: "https://morganstanley.eightfold.ai/careers", domain: morganstanley.com}
+    - {name: Micron, source: eightfold, careers_url: "https://careers.micron.com/careers", domain: micron.com}
+    - {name: Qualcomm, source: eightfold, careers_url: "https://careers.qualcomm.com/careers", domain: qualcomm.com}
+    - {name: PayPal, source: eightfold, careers_url: "https://paypal.eightfold.ai/careers", domain: paypal.com}
+    # --- own JSON endpoints (fetcher pending) ---
+    - {name: Atlassian, source: atlassian, careers_url: "https://www.atlassian.com/endpoint/careers/listings"}
+    - {name: AMD, source: amd, careers_url: "https://careers.amd.com/api/jobs"}
+    - {name: Zerodha, source: zerodha, careers_url: "https://careers.zerodha.com/api/jobs"}
+    - {name: Nutanix, source: jobvite, careers_url: "https://jobs.jobvite.com/nutanix/jobs"}
+    # --- custom / JS-only sites (fetcher pending; Playwright) ---
+    - {name: Goldman Sachs, source: custom, careers_url: "https://higher.gs.com/roles"}
+    - {name: Google, source: custom, careers_url: "https://www.google.com/about/careers/applications/jobs/results/?location=India&q=software%20engineer"}
+    - {name: Apple, source: custom, careers_url: "https://jobs.apple.com/en-in/search?location=india-INDC&team=software-engineering-SFTWR"}
+    - {name: Intuit, source: custom, careers_url: "https://jobs.intuit.com/location/bengaluru-jobs/27595/1269750-1267701-1277333/4"}
+    - {name: Pegasystems, source: custom, careers_url: "https://www.pega.com/about/careers/search"}
+    - {name: Rippling, source: custom, careers_url: "https://www.rippling.com/careers/open-roles"}
+    - {name: Flipkart, source: custom, careers_url: "https://flipkart.turbohire.co/careerpage/4d757ba0-3d57-448a-b82c-238ed87ac90f"}
+    - {name: Myntra, source: custom, careers_url: "https://jobs.myntra.com/home"}
+    - {name: Zomato, source: custom, careers_url: "https://eternal.com/careers"}
+    - {name: Zoho, source: custom, careers_url: "https://careers.zohocorp.com/jobs/Careers"}
+    - {name: Chargebee, source: custom, careers_url: "https://jobs.chargebee.com/search/?q=software"}
+    - {name: Confluent (IBM), source: custom, careers_url: "https://www.ibm.com/careers/search?q=confluent"}

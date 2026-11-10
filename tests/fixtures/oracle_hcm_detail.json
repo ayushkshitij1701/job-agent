@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "Id": "210804197",
+      "Title": "Lead Software Engineer- AI Agent Developer",
+      "PrimaryLocation": "Bengaluru, Karnataka, India",
+      "ExternalDescriptionStr": "<p>Join our <b>AI Agent</b> team.</p><ul><li>Python, LangChain</li><li>3+ years</li></ul>",
+      "ExternalQualificationsStr": "<p>Required: Java</p>",
+      "ExternalResponsibilitiesStr": "",
+      "secondaryLocations": [
+        {
+          "Name": "Hyderabad, Telangana, India"
+        }
+      ]
+    }
+  ]
+}

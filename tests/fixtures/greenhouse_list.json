@@ -1,0 +1,51 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://stripe.com/jobs/search?gh_jid=8234252",
+      "id": 8234252,
+      "updated_at": "2026-10-29T10:42:09-04:00",
+      "requisition_id": "See Opening ID",
+      "title": "Engineering Manager, Accounting Products",
+      "location": {
+        "name": "Bengaluru, India"
+      },
+      "first_published": "2026-09-28T06:27:03-04:00"
+    },
+    {
+      "absolute_url": "https://stripe.com/jobs/search?gh_jid=7543868",
+      "id": 7543868,
+      "updated_at": "2026-10-29T10:42:09-04:00",
+      "requisition_id": "See Opening ID",
+      "title": "Software Engineer, Financial Business Insights",
+      "location": {
+        "name": "Bengaluru, India"
+      },
+      "first_published": "2026-01-27T22:58:55-05:00"
+    },
+    {
+      "absolute_url": "https://stripe.com/jobs/search?gh_jid=8031833",
+      "id": 8031833,
+      "updated_at": "2026-10-29T10:42:09-04:00",
+      "requisition_id": "See Opening ID",
+      "title": "Software Engineer, Intern",
+      "location": {
+        "name": "Bengaluru"
+      },
+      "first_published": "2026-07-10T01:33:52-04:00"
+    },
+    {
+      "absolute_url": "https://stripe.com/jobs/search?gh_jid=7544547",
+      "id": 7544547,
+      "updated_at": "2026-10-29T10:42:09-04:00",
+      "requisition_id": "See Opening ID",
+      "title": "Operations Associate, New Grad (Mexico)",
+      "location": {
+        "name": "Mexico City, Mexico"
+      },
+      "first_published": "2026-01-28T14:00:36-05:00"
+    }
+  ],
+  "meta": {
+    "total": 4
+  }
+}

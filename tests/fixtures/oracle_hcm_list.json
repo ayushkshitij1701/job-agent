@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "TotalJobsCount": 96,
+      "requisitionList": [
+        {
+          "Id": "210804197",
+          "Title": "Lead Software Engineer- AI Agent Developer",
+          "PostedDate": "2026-11-03",
+          "PrimaryLocation": "Bengaluru, Karnataka, India",
+          "PrimaryLocationCountry": "IN",
+          "ShortDescriptionStr": "We\u2019re seeking a Lead Software Engineer (AI/ML) to build and operate scalable, low-latency autonomous agent systems in production. ",
+          "WorkplaceType": ""
+        },
+        {
+          "Id": "210802972",
+          "Title": "Lead Software Engineer - Python, API Platform & AI- assisted development",
+          "PostedDate": "2026-11-03",
+          "PrimaryLocation": "Hyderabad, Telangana, India",
+          "PrimaryLocationCountry": "IN",
+          "ShortDescriptionStr": "Carry out critical tech solutions across multiple technical areas as an integral part of an agile team",
+          "WorkplaceType": ""
+        },
+        {
+          "Id": "210801248",
+          "Title": "Software Engineer III - Java Developer + Python + Agentic AI",
+          "PostedDate": "2026-10-29",
+          "PrimaryLocation": "Mumbai, Maharashtra, India",
+          "PrimaryLocationCountry": "IN",
+          "ShortDescriptionStr": "Design and deliver market-leading technology products in a secure and scalable way as a seasoned member of an agile team ",
+          "WorkplaceType": ""
+        }
+      ]
+    }
+  ]
+}
